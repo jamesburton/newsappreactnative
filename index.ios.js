@@ -4,6 +4,9 @@
  * @flow
  */
 
+// Import rn-nodeify shims
+import './shim';
+
 import React, { Component } from 'react';
 import {
   AppRegistry,
