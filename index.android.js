@@ -84,20 +84,20 @@ export default class NewsAppReactNative extends React.Component {
     this.toggleTechnology = this._toggleTechnology.bind(this);
   }
   _toggleBBC() {
-    alert(this.state.bbcChecked);
+    //alert(this.state.bbcChecked);
     this.setState({bbcChecked: !this.state.bbcChecked});
   }
   _toggleReuters() {
-    alert(this.state.reutersChecked);
+    //alert(this.state.reutersChecked);
     this.setState({reutersChecked: !this.state.reutersChecked});
   }
   _toggleUK() {
-    alert(this.state.ukChecked);
-    this.setState({bbcChecked: !this.state.ukChecked});
+    //alert(this.state.ukChecked);
+    this.setState({ukChecked: !this.state.ukChecked});
   }
   _toggleTechnology() {
-    alert(this.state.technologyChecked);
-    this.setState({bbcChecked: !this.state.technologyChecked});
+    //alert(this.state.technologyChecked);
+    this.setState({technologyChecked: !this.state.technologyChecked});
   }
   rowHasChanged(r1, r2) {
     return r1 !== r2;
@@ -117,7 +117,7 @@ export default class NewsAppReactNative extends React.Component {
     this.loadFeeds();
   }
   bbcCheckClick(checked) { 
-    alert(checked);
+    //alert(checked);
     //alert(this.state.bbcChecked);
     //this.setState(Object.assign({}, this.state, { bbcChecked: !this.state.bbcChecked })); 
     this.setState({bbcChecked: false});
@@ -154,7 +154,7 @@ export default class NewsAppReactNative extends React.Component {
     var categories = this.getCategories();
     var feeds = this.state.feeds;
     var activeFeeds = [];
-    alert(this.state.bbcChecked);
+    //alert(this.state.bbcChecked);
     //alert("sources=" + JSON.stringify(sources));
     feeds.forEach((feed) => {
       if(sources.includes(feed.source) && categories.includes(feed.category)) 
