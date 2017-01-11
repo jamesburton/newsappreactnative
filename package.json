@@ -7,7 +7,9 @@
     "test": "jest"
   },
   "dependencies": {
-    "feedparser": "^2.0.0",
+    "es6-promise": "^4.0.5",
+    "feed-reader": "^1.1.2",
+    "isomorphic-fetch": "^2.2.1",
     "react": "15.4.2",
     "react-native": "0.40.0"
   },
