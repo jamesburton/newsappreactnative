@@ -34,6 +34,7 @@ var feeds = [
   { url: 'http://feeds.reuters.com/reuters/UKdomesticNews?format=xml', source: 'Reuters', category: 'UK', items: []},
   { url: 'http://feeds.reuters.com/reuters/technologyNews?format=xml', source: 'Reuters', category: 'Technology', items: []}
 ];
+function flatten(a,b){return a.concat(b);}
 
 // TODO: Parse feeds
 /* NB: With feed-reader
@@ -74,7 +75,9 @@ export default class NewsAppReactNative extends React.Component {
     this.loadFeeds();
   }
   render() {
-    const rows = this.ds.cloneWithRows(this.state.feeds || []);
+    //const rows = this.ds.cloneWithRows(this.state.feeds || []);
+    const items = (this.state.feeds ||[]).map(feed => feed.items).reduce(flatten,[]);
+    const rows = this.ds.cloneWithRows(items || []);
     return (
       /*
       <View style={styles.container}>
@@ -98,9 +101,14 @@ export default class NewsAppReactNative extends React.Component {
         </View>
         <View>
           { /* <Text>List</Text> */ }
+          { /*
           <ListView 
             dataSource={rows}
             renderRow={(data) => <View><Text>{data.url}</Text></View> }
+            /> */ }
+          <ListView 
+            dataSource={rows}
+            renderRow={(item) => <View><Text>{item.title}</Text></View> }
             />
         </View>
         <View><Text>Details:</Text></View>
