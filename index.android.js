@@ -13,9 +13,11 @@ import {
   StyleSheet,
   Text,
   View,
-  ListView
+  ListView,
+  Button
 } from 'react-native';
-
+//import CheckBox from 'react-native-checkbox';
+import { Container, Content, Header, Footer, FooterTab, CheckBox } from 'native-base';
 
 import FeedParser from 'feedparser';
 /*
@@ -51,71 +53,162 @@ feeds.forEach(feed => parse(feed.url).then(data => {
 //* NB: With xmldom and isomorphic-fetch
 import { DOMParser } from 'xmldom';
 
+import NewsApp from './app/NewsApp';
+
 export default class NewsAppReactNative extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      feeds: feeds
+      feeds: feeds,
+      bbcChecked: true,
+      reutersChecked: true,
+      ukChecked: true,
+      technologyChecked: true,
+      activeFeeds: [],
+      selectedItem: null
     };
     //alert('constructor: feeds.length=' + feeds.length);
     this.ds = new ListView.DataSource({rowHasChanged: this.rowHasChanged});
+    // Configure bound checkbox click handlers
+    this.onBbcCheckClick = this.bbcCheckClick.bind(this);
+    this.onReutersCheckClick = this.reutersCheckClick.bind(this);
+    this.onUkCheckClick = this.ukCheckClick.bind(this);
+    this.onTechnologyCheckClick = this.technologyCheckClick.bind(this);
+
+    //this.toggleBbcChecked = () => { this.setState(Object.assign({}, this.state, { bbcChecked: !this.state.bbcChecked })); this.optionsChanged(); };
+    //this.toggleBbcChecked = () => { this.setState({ bbcChecked: !this.state.bbcChecked }); this.optionsChanged(); };
+    //this.toggleBBC = () => { alert('toggleBBC') };
+    this.toggleBBC = this._toggleBBC.bind(this);
+    this.toggleReuters = this._toggleReuters.bind(this);
+    this.toggleUK = this._toggleUK.bind(this);
+    this.toggleTechnology = this._toggleTechnology.bind(this);
+  }
+  _toggleBBC() {
+    alert(this.state.bbcChecked);
+    this.setState({bbcChecked: !this.state.bbcChecked});
+  }
+  _toggleReuters() {
+    alert(this.state.reutersChecked);
+    this.setState({reutersChecked: !this.state.reutersChecked});
+  }
+  _toggleUK() {
+    alert(this.state.ukChecked);
+    this.setState({bbcChecked: !this.state.ukChecked});
+  }
+  _toggleTechnology() {
+    alert(this.state.technologyChecked);
+    this.setState({bbcChecked: !this.state.technologyChecked});
   }
   rowHasChanged(r1, r2) {
     return r1 !== r2;
   }
   loadFeeds() {
-    //alert(this.state.feeds[0].url);
     _loadFeeds(this.state.feeds, (updatedFeeds) => {
-      //alert(updatedFeeds.length);
+      //alert("Feeds updated: updatedFeeds.length=", updatedFeeds.length);
       this.setState(Object.assign({}, this.state, { feeds: updatedFeeds }));
+      this.optionsChanged();
     })
   }
+  selectItem(item) {
+    this.setState(Object.assign(this.state, { selectedItem: item }))
+  }
+  deletedItem() { this.selectItem(null); }
   componentDidMount() {
-    //alert('Mounted');
     this.loadFeeds();
   }
+  bbcCheckClick(checked) { 
+    alert(checked);
+    //alert(this.state.bbcChecked);
+    //this.setState(Object.assign({}, this.state, { bbcChecked: !this.state.bbcChecked })); 
+    this.setState({bbcChecked: false});
+    this.optionsChanged(); 
+  }
+  reutersCheckClick(checked) { 
+    this.setState(Object.assign({}, this.state, { reutersChecked: checked })); 
+    this.optionsChanged(); 
+  }
+  ukCheckClick(checked) { 
+    this.setState(Object.assign({}, this.state, { ukChecked: checked })); 
+    this.optionsChanged(); 
+  }
+  technologyCheckClick(checked) { 
+    this.setState(Object.assign({}, this.state, { technologyChecked: checked })); 
+    this.optionsChanged(); 
+  }
+  getSources() {
+    //alert('getSources: relevant state=' + JSON.stringify({bbcChecked: this.state.bbcChecked, reutersChecked: this.state.reutersChecekd }));
+    var sources = [];
+    if(this.state.bbcChecked === true) sources.push('BBC');
+    if(this.state.reutersChecked === true) sources.push('Reuters');
+    return sources;
+  }
+  getCategories() {
+    var categories = [];
+    if(this.state.ukChecked === true) categories.push('UK');
+    if(this.state.technologyChecked === true) categories.push('Technology');
+    return categories;
+  }
+  optionsChanged() {
+    //alert('optionsChanged');
+    var sources = this.getSources();
+    var categories = this.getCategories();
+    var feeds = this.state.feeds;
+    var activeFeeds = [];
+    alert(this.state.bbcChecked);
+    //alert("sources=" + JSON.stringify(sources));
+    feeds.forEach((feed) => {
+      if(sources.includes(feed.source) && categories.includes(feed.category)) 
+      activeFeeds.push(feed); 
+    });
+    this.setState(Object.assign({}, this.state, { activeFeeds: activeFeeds }));
+    //alert("activeFeeds.length:- " + activeFeeds.length);
+  }
   render() {
-    //const rows = this.ds.cloneWithRows(this.state.feeds || []);
-    const items = (this.state.feeds ||[]).map(feed => feed.items).reduce(flatten,[]);
+    //const items = (this.state.feeds ||[]).map(feed => feed.items).reduce(flatten,[]);
+    const items = (this.state.activeFeeds ||[]).map(feed => feed.items).reduce(flatten,[]);
     const rows = this.ds.cloneWithRows(items || []);
+
+    var sources = this.getSources();
+    var categories = this.getCategories();
+
+/*
     return (
-      /*
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.android.js
-        </Text>
-        <Text style={styles.instructions}>
-          Double tap R on your keyboard to reload,{'\n'}
-          Shake or press menu button for dev menu
-        </Text>
-      </View>
-      //*/
-      //*
-      <View style={styles.container}>
-        <View><Text>Example React-Native News App</Text></View>
-        <View>
-          <Text>Options:</Text>
-        </View>
-        <View>
-          { /* <Text>List</Text> */ }
-          { /*
+      <Container>
+        <Header>
+          <Text>Example React-Native News App</Text>
+        </Header>
+        <Content>
+        <View style={styles.container}>
+          <View>
+            <View>
+              <Text>Options:</Text>
+              <View style={{flexDirection: 'row'}}>
+                <Text>Sources: </Text>
+                <View>
+                  <Button onPress={this.toggleBbcChecked} title="Toggle BBC"/>
+                </View>
+              </View>
+              <View style={{flexDirection: 'row'}}>
+                <Text>Categories: </Text>
+              </View>
+            </View>
+          </View>
           <ListView 
-            dataSource={rows}
-            renderRow={(data) => <View><Text>{data.url}</Text></View> }
-            /> */ }
-          <ListView 
+            renderHeader={() => <Text>Sources: {JSON.stringify(sources)}, Categories: {JSON.stringify(categories)}</Text>}
             dataSource={rows}
             renderRow={(item) => <View><Text>{item.title}</Text></View> }
             />
+          <View>
+            <View><Text>Details:</Text></View>
+            <View><Text>Status: </Text></View>
+          </View>
         </View>
-        <View><Text>Details:</Text></View>
-        <View><Text>Status: </Text></View>
-      </View>
-      //*/
+      </Content>
+    </Container>
     );
+    */
+
+    return <NewsApp feeds={this.state.feeds} bbcChecked={this.state.bbcChecked} reutersChecked={this.state.reutersChecked} ukChecked={this.state.ukChecked} technologyChecked={this.state.technologyChecked} toggleBBC={this.toggleBBC} toggleReuters={this.toggleReuters} toggleUK={this.toggleUK} toggleTechnology={this.toggleTechnology} />;
   }
 }
 
@@ -150,7 +243,7 @@ function _loadFeeds(feeds, cb)
   //for(var fi = 0; fi < feeds.length; fi++)
   //{
     //let feed = feeds[fi];
-    alert(feed.url);
+    //alert(feed.url);
     fetch(feed.url)
       .then(res => res.text())
       .then(text => {
