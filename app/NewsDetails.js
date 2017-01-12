@@ -18,12 +18,16 @@ class NewsDetails extends React.Component
     render() {
         var props = this.props;
         var item = props.selectedItem;
+        //var item = props;
         console.log('Rendering NewsDetails: props=', props, ', item=', item);
-        return <View>
-            <View><Text>[NewsDetails]</Text></View>
+        return item
+        ? <View>
             <View><Text>{item.title}</Text></View>
-            <View><Text style={{color: 'blue', textDecorationStyle: 'underline'}} onPress={() => Linking.openURL(item.link)}>{item.link}</Text></View>
+            <View><Text style={{color: 'blue'}} onPress={() => Linking.openURL(item.link)}>{item.link}</Text></View>
             <View><Text>{item.description}</Text></View>
+        </View>
+        : <View>
+            <Text style={{fontStyle: 'italic', fontSize: 'small'}}>No news item selected</Text>
         </View>;
     }
 }

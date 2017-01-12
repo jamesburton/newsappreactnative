@@ -33,6 +33,7 @@
     "react-native": "0.40.0",
     "react-native-checkbox": "^1.1.0",
     "react-native-crypto": "^2.0.0",
+    "react-native-easy-grid": "^0.1.8",
     "react-native-http": "github:tradle/react-native-http#834492d",
     "react-native-level-fs": "^3.0.0",
     "react-native-randombytes": "^2.1.0",
