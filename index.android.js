@@ -64,7 +64,8 @@ export default class NewsAppReactNative extends React.Component {
       reutersChecked: true,
       ukChecked: true,
       technologyChecked: true,
-      activeFeeds: [],
+      //activeFeeds: [],
+      items: [],
       selectedItem: null
     };
     //alert('constructor: feeds.length=' + feeds.length);
@@ -82,6 +83,8 @@ export default class NewsAppReactNative extends React.Component {
     this.toggleReuters = this._toggleReuters.bind(this);
     this.toggleUK = this._toggleUK.bind(this);
     this.toggleTechnology = this._toggleTechnology.bind(this);
+
+    this.onSelectItem = this.selectItem.bind(this);
   }
   _toggleBBC() {
     //alert(this.state.bbcChecked);
@@ -121,19 +124,15 @@ export default class NewsAppReactNative extends React.Component {
     //alert(this.state.bbcChecked);
     //this.setState(Object.assign({}, this.state, { bbcChecked: !this.state.bbcChecked })); 
     this.setState({bbcChecked: false});
-    this.optionsChanged(); 
   }
   reutersCheckClick(checked) { 
     this.setState(Object.assign({}, this.state, { reutersChecked: checked })); 
-    this.optionsChanged(); 
   }
   ukCheckClick(checked) { 
     this.setState(Object.assign({}, this.state, { ukChecked: checked })); 
-    this.optionsChanged(); 
   }
   technologyCheckClick(checked) { 
     this.setState(Object.assign({}, this.state, { technologyChecked: checked })); 
-    this.optionsChanged(); 
   }
   getSources() {
     //alert('getSources: relevant state=' + JSON.stringify({bbcChecked: this.state.bbcChecked, reutersChecked: this.state.reutersChecekd }));
@@ -148,67 +147,33 @@ export default class NewsAppReactNative extends React.Component {
     if(this.state.technologyChecked === true) categories.push('Technology');
     return categories;
   }
-  optionsChanged() {
-    //alert('optionsChanged');
-    var sources = this.getSources();
-    var categories = this.getCategories();
-    var feeds = this.state.feeds;
-    var activeFeeds = [];
-    //alert(this.state.bbcChecked);
-    //alert("sources=" + JSON.stringify(sources));
-    feeds.forEach((feed) => {
-      if(sources.includes(feed.source) && categories.includes(feed.category)) 
-      activeFeeds.push(feed); 
-    });
-    this.setState(Object.assign({}, this.state, { activeFeeds: activeFeeds }));
-    //alert("activeFeeds.length:- " + activeFeeds.length);
+  getItems() {
+    var sources = this.getSources(), 
+        categories = this.getCategories()
+        feeds = this.state.feeds;
+    var items = (feeds || [])
+      .filter(feed => sources.includes(feed.source) && categories.includes(feed.category))
+      .map(feed => feed.items)
+      .reduce(flatten,[])
+      .sort((a,b) => a.published > b.published);
+    alert(items.length);
+    return items;
   }
   render() {
-    //const items = (this.state.feeds ||[]).map(feed => feed.items).reduce(flatten,[]);
-    const items = (this.state.activeFeeds ||[]).map(feed => feed.items).reduce(flatten,[]);
-    const rows = this.ds.cloneWithRows(items || []);
-
-    var sources = this.getSources();
-    var categories = this.getCategories();
-
-/*
-    return (
-      <Container>
-        <Header>
-          <Text>Example React-Native News App</Text>
-        </Header>
-        <Content>
-        <View style={styles.container}>
-          <View>
-            <View>
-              <Text>Options:</Text>
-              <View style={{flexDirection: 'row'}}>
-                <Text>Sources: </Text>
-                <View>
-                  <Button onPress={this.toggleBbcChecked} title="Toggle BBC"/>
-                </View>
-              </View>
-              <View style={{flexDirection: 'row'}}>
-                <Text>Categories: </Text>
-              </View>
-            </View>
-          </View>
-          <ListView 
-            renderHeader={() => <Text>Sources: {JSON.stringify(sources)}, Categories: {JSON.stringify(categories)}</Text>}
-            dataSource={rows}
-            renderRow={(item) => <View><Text>{item.title}</Text></View> }
-            />
-          <View>
-            <View><Text>Details:</Text></View>
-            <View><Text>Status: </Text></View>
-          </View>
-        </View>
-      </Content>
-    </Container>
-    );
-    */
-
-    return <NewsApp feeds={this.state.feeds} bbcChecked={this.state.bbcChecked} reutersChecked={this.state.reutersChecked} ukChecked={this.state.ukChecked} technologyChecked={this.state.technologyChecked} toggleBBC={this.toggleBBC} toggleReuters={this.toggleReuters} toggleUK={this.toggleUK} toggleTechnology={this.toggleTechnology} />;
+    var items = this.getItems();
+    return <NewsApp 
+      feeds={this.state.feeds} 
+      bbcChecked={this.state.bbcChecked} 
+      reutersChecked={this.state.reutersChecked} 
+      ukChecked={this.state.ukChecked} 
+      technologyChecked={this.state.technologyChecked} 
+      toggleBBC={this.toggleBBC} 
+      toggleReuters={this.toggleReuters} 
+      toggleUK={this.toggleUK} 
+      toggleTechnology={this.toggleTechnology} 
+      items={items} 
+      selectItem={this.onSelectItem}
+      selectedItem={this.state.selectedItem}/>;
   }
 }
 

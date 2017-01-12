@@ -14,8 +14,16 @@ var NewsApp = (props) => <Container>
     </Header>
     <Content>
         <View><Filters toggleBBC={props.toggleBBC} toggleReuters={props.toggleReuters} toggleUK={props.toggleUK} toggleTechnology={props.toggleTechnology} /></View>
-        <View><NewsList bbcChecked={props.bbcChecked} reutersChecked={props.reutersChecked} ukChecked={props.ukChecked} technologyChecked={props.technologyChecked} /></View>
-        <View><NewsDetails selectedItem={props.selectedItem} /></View>
+        <View>
+            <NewsList 
+                bbcChecked={props.bbcChecked} 
+                reutersChecked={props.reutersChecked} 
+                ukChecked={props.ukChecked} 
+                technologyChecked={props.technologyChecked}
+                items={props.items}
+                />
+        </View>
+        { props.selectedItem && <View><NewsDetails selectedItem={props.selectedItem} /></View> }
     </Content>
     <Footer>
         <NewsFooter />
