@@ -99,7 +99,6 @@ export default class NewsAppReactNative extends React.Component {
     this.setState({ukChecked: !this.state.ukChecked});
   }
   _toggleTechnology() {
-    //alert(this.state.technologyChecked);
     this.setState({technologyChecked: !this.state.technologyChecked});
   }
   rowHasChanged(r1, r2) {
@@ -107,23 +106,21 @@ export default class NewsAppReactNative extends React.Component {
   }
   loadFeeds() {
     _loadFeeds(this.state.feeds, (updatedFeeds) => {
-      //alert("Feeds updated: updatedFeeds.length=", updatedFeeds.length);
-      this.setState(Object.assign({}, this.state, { feeds: updatedFeeds }));
-      this.optionsChanged();
+      console.log('_loadFeeds callback: updatedFeeds=', updatedFeeds);
+      //this.setState(Object.assign({}, this.state, { feeds: updatedFeeds }));
+      this.setState(Object.assign({}, this.state, { feeds: updatedFeeds, items: this.getItems() }));
     })
   }
   selectItem(item) {
-    this.setState(Object.assign(this.state, { selectedItem: item }))
+    this.setState(Object.assign({}, this.state, { selectedItem: item }))
+    console.log('index.android.js:- selectItem, item=', item);
   }
   deletedItem() { this.selectItem(null); }
   componentDidMount() {
     this.loadFeeds();
   }
   bbcCheckClick(checked) { 
-    //alert(checked);
-    //alert(this.state.bbcChecked);
-    //this.setState(Object.assign({}, this.state, { bbcChecked: !this.state.bbcChecked })); 
-    this.setState({bbcChecked: false});
+    this.setState(Object.assign({}, this.state, { bbcChecked: !this.state.bbcChecked })); 
   }
   reutersCheckClick(checked) { 
     this.setState(Object.assign({}, this.state, { reutersChecked: checked })); 
@@ -135,7 +132,6 @@ export default class NewsAppReactNative extends React.Component {
     this.setState(Object.assign({}, this.state, { technologyChecked: checked })); 
   }
   getSources() {
-    //alert('getSources: relevant state=' + JSON.stringify({bbcChecked: this.state.bbcChecked, reutersChecked: this.state.reutersChecekd }));
     var sources = [];
     if(this.state.bbcChecked === true) sources.push('BBC');
     if(this.state.reutersChecked === true) sources.push('Reuters');
@@ -151,12 +147,13 @@ export default class NewsAppReactNative extends React.Component {
     var sources = this.getSources(), 
         categories = this.getCategories()
         feeds = this.state.feeds;
+    console.log('index.android.js:- getItems: sources=', sources, ", categories=", categories, ", bbcChecked=", this.state.bbcChecked, ", reutersChecked=", this.state.reutersChecked, ", ukChecked=", this.state.ukChecked, ", technologyChecked=", this.state.technologyChecked);
     var items = (feeds || [])
       .filter(feed => sources.includes(feed.source) && categories.includes(feed.category))
       .map(feed => feed.items)
       .reduce(flatten,[])
       .sort((a,b) => a.published > b.published);
-    alert(items.length);
+    //alert(items.length);
     return items;
   }
   render() {
@@ -200,49 +197,36 @@ const styles = StyleSheet.create({
 var parser = new DOMParser();
 function _loadFeeds(feeds, cb)
 {
-  //alert('_loadFeeds: typeof feeds = ' + typeof feeds);
   feeds = Object.assign([], feeds);
-  //alert('_loadFeeds: feeds.length = ' + feeds.length);
   // NB: fetch is native to react-native
   feeds.forEach((feed, index) => {
-  //for(var fi = 0; fi < feeds.length; fi++)
-  //{
-    //let feed = feeds[fi];
-    //alert(feed.url);
     fetch(feed.url)
       .then(res => res.text())
       .then(text => {
         return text.trim().startsWith('<?xml')
           ? parser.parseFromString(text, 'text/xml')
-          //? new DOMParser().parseFromString(text, 'text/xml')
           : null;
         })
       .then(xml => {
         if(xml === null)
           alert('Result was not XML');
         else if(xml.getElementsByTagName('rss').length === 1) {
-          //alert('RSS found');
           var items = xml.getElementsByTagName('item');
           if(!items) {
             alert('No items fetched: url=' + feed.url);
           } else {
-            //alert(items.length);
-            //alert(typeof items);
             //items.map(item => {
             for(var i = 0; i < items.length; i++) {
               let item = items[i];
-              //if(i < 2) alert(item.getElementsByTagName("title")[0].textContent);
-              //return {
               feed.items.push({
                 title: item.getElementsByTagName("title")[0].textContent,
                 description: item.getElementsByTagName("description")[0].textContent,
                 link: item.getElementsByTagName("link")[0].textContent,
                 published: item.getElementsByTagName("pubDate")[0].textContent
-              //};
               });
             }
-            //alert(feed.items.length);
             //);
+            cb(feeds);
           }
         }
         else if(xml.getElementsByTagName('feed').length === 1)
@@ -252,7 +236,6 @@ function _loadFeeds(feeds, cb)
       });
   });
   // TODO: Add LocalStorage caching and retrieval
-  // TODO: Ensure feeds are displaying with actual data
-  cb(feeds);
+  //cb(feeds);  // NB: Moved, so that each triggers an update as it loads
 }
 AppRegistry.registerComponent('NewsAppReactNative', () => NewsAppReactNative);

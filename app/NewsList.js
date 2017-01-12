@@ -23,13 +23,14 @@ class NewsList extends React.Component
                     renderHeader={() => <Text>[NewsList header 2]</Text>}
                     renderFooter={() => (props.items||[]).length === 0 && <Text>No active data</Text> }
                     dataSource={rows}
-                    renderRow={(item) => <View><Text>{item.title}</Text></View> }
+                    renderRow={row => <NewsItem {...row} selectItem={() => props.selectItem(row)} />}
                 />
             </View>
         </View>;
     }
 }
 /*
+        renderRow={(item) => <View onClick={() => props.selectItem(item)}><Text>{item.title}</Text></View> }
         renderRow={row => <NewsItem {...row} onClick={() => props.selectItem(row)} />}
 */
 module.exports = NewsList;

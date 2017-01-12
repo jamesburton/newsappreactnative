@@ -8,7 +8,10 @@ import NewsList from './NewsList';
 import NewsDetails from './NewsDetails';
 import NewsFooter from './NewsFooter';
 
-var NewsApp = (props) => <Container>
+//var NewsApp = (props) => <Container>
+var NewsApp = (props) => {
+    console.log('Rendering NewsApp: props=', props);
+    return <Container>
     <Header>
         <NewsHeader />
     </Header>
@@ -21,6 +24,7 @@ var NewsApp = (props) => <Container>
                 ukChecked={props.ukChecked} 
                 technologyChecked={props.technologyChecked}
                 items={props.items}
+                selectItem={props.selectItem}
                 />
         </View>
         { props.selectedItem && <View><NewsDetails selectedItem={props.selectedItem} /></View> }
@@ -28,5 +32,7 @@ var NewsApp = (props) => <Container>
     <Footer>
         <NewsFooter />
     </Footer>
-</Container>;
+</Container>
+}
+;
 module.exports = NewsApp;
