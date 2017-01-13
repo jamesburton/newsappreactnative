@@ -1,3 +1,5 @@
+import codePath from 'react-native-code-push';
+
 import React from 'react';
 import {ScrollView, Text, View} from 'react-native';
 //import {Container, Content, Footer, Header} from 'native-base';
@@ -209,4 +211,5 @@ var NewsApp = (props) => {
 }
 ;
 
+NewsApp = codePush(NewsApp);
 module.exports = NewsApp;

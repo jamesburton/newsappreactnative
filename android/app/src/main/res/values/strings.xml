@@ -1,3 +1,4 @@
 <resources>
+    <string moduleConfig="true" name="reactNativeCodePush_androidDeploymentKey">DtUoeKdr6UNZMTQ_7o--LL-uwHkR4JH9dkfLM</string>
     <string name="app_name">NewsAppReactNative</string>
 </resources>
