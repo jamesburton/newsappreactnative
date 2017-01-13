@@ -71,21 +71,22 @@ export default class NewsAppReactNative extends React.Component {
     //alert('constructor: feeds.length=' + feeds.length);
     this.ds = new ListView.DataSource({rowHasChanged: this.rowHasChanged});
     // Configure bound checkbox click handlers
-    this.onBbcCheckClick = this.bbcCheckClick.bind(this);
-    this.onReutersCheckClick = this.reutersCheckClick.bind(this);
-    this.onUkCheckClick = this.ukCheckClick.bind(this);
-    this.onTechnologyCheckClick = this.technologyCheckClick.bind(this);
-
-    //this.toggleBbcChecked = () => { this.setState(Object.assign({}, this.state, { bbcChecked: !this.state.bbcChecked })); this.optionsChanged(); };
-    //this.toggleBbcChecked = () => { this.setState({ bbcChecked: !this.state.bbcChecked }); this.optionsChanged(); };
-    //this.toggleBBC = () => { alert('toggleBBC') };
     this.toggleBBC = this._toggleBBC.bind(this);
     this.toggleReuters = this._toggleReuters.bind(this);
     this.toggleUK = this._toggleUK.bind(this);
     this.toggleTechnology = this._toggleTechnology.bind(this);
 
+    this.setBBC = this._setBBC.bind(this);
+    this.setReuters = this._setReuters.bind(this);
+    this.setUK = this._setUK.bind(this);
+    this.setTechnology = this._setTechnology.bind(this);
+
     this.onSelectItem = this.selectItem.bind(this);
   }
+  _setBBC(value) { this.setState(Object.assign({}, this.state, { bbcChecked: value })); }
+  _setReuters(value) { this.setState(Object.assign({}, this.state, { reutersChecked: value })); }
+  _setUK(value) { this.setState(Object.assign({}, this.state, { ukChecked: value })); }
+  _setTechnology(value) { this.setState(Object.assign({}, this.state, { technologyChecked: value })); }
   _toggleBBC() {
     //alert(this.state.bbcChecked);
     this.setState({bbcChecked: !this.state.bbcChecked});
@@ -118,18 +119,6 @@ export default class NewsAppReactNative extends React.Component {
   deletedItem() { this.selectItem(null); }
   componentDidMount() {
     this.loadFeeds();
-  }
-  bbcCheckClick(checked) { 
-    this.setState(Object.assign({}, this.state, { bbcChecked: !this.state.bbcChecked })); 
-  }
-  reutersCheckClick(checked) { 
-    this.setState(Object.assign({}, this.state, { reutersChecked: checked })); 
-  }
-  ukCheckClick(checked) { 
-    this.setState(Object.assign({}, this.state, { ukChecked: checked })); 
-  }
-  technologyCheckClick(checked) { 
-    this.setState(Object.assign({}, this.state, { technologyChecked: checked })); 
   }
   getSources() {
     var sources = [];
@@ -168,6 +157,10 @@ export default class NewsAppReactNative extends React.Component {
       toggleReuters={this.toggleReuters} 
       toggleUK={this.toggleUK} 
       toggleTechnology={this.toggleTechnology} 
+      setBBC={this.setBBC} 
+      setReuters={this.setReuters} 
+      setUK={this.setUK} 
+      setTechnology={this.setTechnology} 
       items={items} 
       selectItem={this.onSelectItem}
       selectedItem={this.state.selectedItem}/>;

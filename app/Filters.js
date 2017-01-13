@@ -1,19 +1,16 @@
 import React from 'react';
 import {Button, Text, View} from 'react-native';
-var Filters = (props) => <View>
+import ToggleText from './ToggleText';
+var Filters = (props) => <View style={{borderWidth: 1, borderColor: '#666'}}>
     <View style={{flexDirection: 'row'}}>
-        <Text>Sources: </Text>
-        <View>
-            <Button onPress={props.toggleBBC} title="Toggle BBC"/>
-            <Button onPress={props.toggleReuters} title="Toggle Reuters"/>
-        </View>
+        <View><Text>Sources: </Text></View>
+        <ToggleText value={props.bbcChecked} onChange={(checked) => props.setBBC(checked)} text="BBC"/>
+        <ToggleText value={props.reutersChecked} onChange={(checked) => props.setReuters(checked)} text="Reuters"/>
     </View>
     <View style={{flexDirection: 'row'}}>
         <Text>Categories: </Text>
-        <View>
-            <Button onPress={props.toggleUK} title="Toggle UK"/>
-            <Button onPress={props.toggleTechnology} title="Toggle Technology"/>
-        </View>
+        <ToggleText value={props.ukChecked} onChange={(checked) => props.setUK(checked)} text="UK"/>
+        <ToggleText value={props.technologyChecked} onChange={(checked) => props.setTechnology(checked)} text="Technology"/>
     </View>
 </View>;
 module.exports = Filters;
