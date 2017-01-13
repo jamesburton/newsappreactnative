@@ -31,7 +31,7 @@ class NewsDetails extends React.Component
             </View>
         </View>
         : <View style={{borderWidth: 1, borderColor: '#aaa'}}>
-            <Text style={{fontStyle: 'italic', fontSize: 'small'}}>No news item selected</Text>
+            <Text style={{fontStyle: 'italic', fontSize: 14}}>No news item selected</Text>
         </View>;
     }
 }

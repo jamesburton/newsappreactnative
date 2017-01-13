@@ -1,59 +1,23 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
+ * Example React Native News App
+ * https://github.com/jamesburton/newsappreactnative
+ * by James Burton
  */
 
 // Import rn-nodeify shims
 import './shim';
 
 import React, { Component } from 'react';
-import {
-  AppRegistry,
-  StyleSheet,
-  Text,
-  View,
-  ListView,
-  Button
-} from 'react-native';
-//import CheckBox from 'react-native-checkbox';
+import { AppRegistry, StyleSheet, Text, View, ListView, Button } from 'react-native';
 import { Container, Content, Header, Footer, FooterTab, CheckBox } from 'native-base';
 
-import FeedParser from 'feedparser';
-/*
-import FeedParser from 'feedparser';
-require('es6-promise').polyfill();
-require('isomorphic-fetch');
-//*/
-
-//import { parse } from 'feed-reader';
-
-//import feed from 'feed-read';
-
-var feeds = [
-  { url: 'http://feeds.bbci.co.uk/news/uk/rss.xml', source: 'BBC', category: 'UK', items: []},
-  { url: 'http://feeds.bbci.co.uk/news/technology/rss.xml', source: 'BBC', category: 'Technology', items: []},
-  { url: 'http://feeds.reuters.com/reuters/UKdomesticNews?format=xml', source: 'Reuters', category: 'UK', items: []},
-  { url: 'http://feeds.reuters.com/reuters/technologyNews?format=xml', source: 'Reuters', category: 'Technology', items: []}
-];
-function flatten(a,b){return a.concat(b);}
-
-// TODO: Parse feeds
-/* NB: With feed-reader
-feeds.forEach(feed => parse(feed.url).then(data => {
-  feed.items = data.entries
-}));
-//*/
-
-//* NB: With feedparser
-//var feedparser = new FeedParser();
-// NB: This hits sax with react-native issues
-//*/
-
-//* NB: With xmldom and isomorphic-fetch
-import { DOMParser } from 'xmldom';
-
+var feeds = require('./feeds.json');
 import NewsApp from './app/NewsApp';
+import { flatten, pushIf, ExtendedArray } from './helpers/arrayHelpers';
+
+// NB: loadFeeds requires an array of feed objects (with .url source and having .items set when loaded, and triggering the callback as each feed is updated)
+import loadFeeds from './helpers/loadFeeds';
+//var _loadFeeds = (feeds, cb) => loadFeeds(feeds, cb);
 
 export default class NewsAppReactNative extends React.Component {
   constructor(props) {
@@ -83,49 +47,43 @@ export default class NewsAppReactNative extends React.Component {
 
     this.onSelectItem = this.selectItem.bind(this);
   }
-  _setBBC(value) { this.setState(Object.assign({}, this.state, { bbcChecked: value })); }
-  _setReuters(value) { this.setState(Object.assign({}, this.state, { reutersChecked: value })); }
-  _setUK(value) { this.setState(Object.assign({}, this.state, { ukChecked: value })); }
-  _setTechnology(value) { this.setState(Object.assign({}, this.state, { technologyChecked: value })); }
-  _toggleBBC() {
-    //alert(this.state.bbcChecked);
-    this.setState({bbcChecked: !this.state.bbcChecked});
-  }
-  _toggleReuters() {
-    //alert(this.state.reutersChecked);
-    this.setState({reutersChecked: !this.state.reutersChecked});
-  }
-  _toggleUK() {
-    //alert(this.state.ukChecked);
-    this.setState({ukChecked: !this.state.ukChecked});
-  }
-  _toggleTechnology() {
-    this.setState({technologyChecked: !this.state.technologyChecked});
-  }
-  rowHasChanged(r1, r2) {
-    return r1 !== r2;
-  }
-  loadFeeds() {
-    _loadFeeds(this.state.feeds, (updatedFeeds) => {
-      console.log('_loadFeeds callback: updatedFeeds=', updatedFeeds);
-      //this.setState(Object.assign({}, this.state, { feeds: updatedFeeds }));
-      this.setState(Object.assign({}, this.state, { feeds: updatedFeeds, items: this.getItems() }));
-    })
-  }
-  selectItem(item) {
-    this.setState(Object.assign({}, this.state, { selectedItem: item }))
-    console.log('index.android.js:- selectItem, item=', item);
-  }
+
+  _setBBC(value) { this.setState({ bbcChecked: value }); }
+  _setReuters(value) { this.setState({ reutersChecked: value }); }
+  _setUK(value) { this.setState({ ukChecked: value }); }
+  _setTechnology(value) { this.setState({ technologyChecked: value }); }
+
+  toggle(key) { var newState = {}; newState[key] = !this.state[key]; this.setState(newState); }
+  _toggleBBC() { this.toggle('bbcChecked'); }
+  _toggleReuters() { this.toggle('reutersChecked'); }
+  _toggleUK() { this.toggle('ukChecked'); }
+  _toggleTechnology() { this.toggle('technologyChecked'); }
+
+  rowHasChanged(r1, r2) { return r1 !== r2; }
+  //loadFeeds() { /*global/imported*/loadFeeds(this.state.feeds, (updated) => this.loadedFeeds(updated)); }  // NB: Working, but tidier in next format
+  loadFeeds() { /*global/imported*/loadFeeds(this.state.feeds, this.loadedFeeds.bind(this)); }
+  loadedFeeds(updatedFeeds) { this.setState({ feeds: updatedFeeds, items: this.getItems() }); }
+  selectItem(item) { this.setState({ selectedItem: item }) }
   deletedItem() { this.selectItem(null); }
   componentDidMount() {
     this.loadFeeds();
   }
+  getSources() { 
+    //return new ExtendedArray().pushIf(this.state.bbcChecked, 'BBC').pushIf(this.state.reutersChecked, 'Reuters'); 
+    var sources = new ExtendedArray();
+    //sources.test();
+    sources.pushIf(this.state.bbcChecked, 'BBC');
+    sources.pushIf(this.state.reutersChecked, 'Reuters');
+    return sources;
+  }
+  /*
   getSources() {
     var sources = [];
     if(this.state.bbcChecked === true) sources.push('BBC');
     if(this.state.reutersChecked === true) sources.push('Reuters');
     return sources;
   }
+  */
   getCategories() {
     var categories = [];
     if(this.state.ukChecked === true) categories.push('UK');
@@ -142,7 +100,6 @@ export default class NewsAppReactNative extends React.Component {
       .map(feed => feed.items)
       .reduce(flatten,[])
       .sort((a,b) => a.published > b.published);
-    //alert(items.length);
     return items;
   }
   render() {
@@ -186,49 +143,4 @@ const styles = StyleSheet.create({
   },
 });
 
-
-var parser = new DOMParser();
-function _loadFeeds(feeds, cb)
-{
-  feeds = Object.assign([], feeds);
-  // NB: fetch is native to react-native
-  feeds.forEach((feed, index) => {
-    fetch(feed.url)
-      .then(res => res.text())
-      .then(text => {
-        return text.trim().startsWith('<?xml')
-          ? parser.parseFromString(text, 'text/xml')
-          : null;
-        })
-      .then(xml => {
-        if(xml === null)
-          alert('Result was not XML');
-        else if(xml.getElementsByTagName('rss').length === 1) {
-          var items = xml.getElementsByTagName('item');
-          if(!items) {
-            alert('No items fetched: url=' + feed.url);
-          } else {
-            //items.map(item => {
-            for(var i = 0; i < items.length; i++) {
-              let item = items[i];
-              feed.items.push({
-                title: item.getElementsByTagName("title")[0].textContent,
-                description: item.getElementsByTagName("description")[0].textContent,
-                link: item.getElementsByTagName("link")[0].textContent,
-                published: item.getElementsByTagName("pubDate")[0].textContent
-              });
-            }
-            //);
-            cb(feeds);
-          }
-        }
-        else if(xml.getElementsByTagName('feed').length === 1)
-          alert('ATOM found');
-        else
-          alert('Unknown XML format')
-      });
-  });
-  // TODO: Add LocalStorage caching and retrieval
-  //cb(feeds);  // NB: Moved, so that each triggers an update as it loads
-}
 AppRegistry.registerComponent('NewsAppReactNative', () => NewsAppReactNative);

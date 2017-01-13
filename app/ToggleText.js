@@ -14,7 +14,7 @@ class ToggleText extends React.Component {
     }
     render() {
         return <View style={{marginRight: this.props.spacing || 5}}>
-            <Text onPress={this.onPress} style={{textDecorationLine: this.state.value ? '' : 'line-through'}} {...this.props}>{this.props.text}</Text>
+            <Text onPress={this.onPress} style={{textDecorationLine: this.state.value ? 'none' : 'line-through'}} {...this.props}>{this.props.text}</Text>
         </View>;
     }
 }

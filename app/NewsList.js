@@ -12,18 +12,19 @@ class NewsList extends React.Component
         let props = this.props;
         let rows = this.ds.cloneWithRows(props.items || []);
         return <View>
-            <View>
-                <Text>Sources: { props.bbcChecked && 'BBC'} { props.reutersChecked && 'Reuters' }</Text>
+            <View style={{backgroundColor: '#aaa'}}>
+                <Text>Active Sources: { props.bbcChecked && 'BBC'} { props.reutersChecked && 'Reuters' }</Text>
             </View>
-            <View>
-                <Text>Categories: { props.ukChecked && 'UK'} { props.technologyChecked && 'Technology' }</Text>
+            <View style={{backgroundColor: '#aaa'}}>
+                <Text>Active Categories: { props.ukChecked && 'UK'} { props.technologyChecked && 'Technology' }</Text>
             </View>
             <View>
                 <ListView 
+                    enableEmptySections={true}
                     renderHeader={() => <Text>[NewsList header 2]</Text>}
                     renderFooter={() => (props.items||[]).length === 0 && <Text>No active data</Text> }
                     dataSource={rows}
-                    renderRow={row => <NewsItem {...row} selectItem={() => props.selectItem(row)} />}
+                    renderRow={row => <NewsItem {...row} selectItem={() => props.selectItem(row)} key={row.link} />}
                 />
             </View>
         </View>;

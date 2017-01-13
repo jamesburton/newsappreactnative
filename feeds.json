@@ -1,0 +1,6 @@
+[
+  { "url": "http://feeds.bbci.co.uk/news/uk/rss.xml", "source": "BBC", "category": "UK", "items": []},
+  { "url": "http://feeds.bbci.co.uk/news/technology/rss.xml", "source": "BBC", "category": "Technology", "items": []},
+  { "url": "http://feeds.reuters.com/reuters/UKdomesticNews?format=xml", "source": "Reuters", "category": "UK", "items": []},
+  { "url": "http://feeds.reuters.com/reuters/technologyNews?format=xml", "source": "Reuters", "category": "Technology", "items": []}
+]
