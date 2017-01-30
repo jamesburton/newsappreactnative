@@ -1,0 +1,8 @@
+NewsAppReactNative Code Push Details:-
+
+¦ Name       ¦ Deployment Key                        ¦
++------------+---------------------------------------¦
+¦ Production ¦ IJHcD0gSv4zsziioW7_wZsURU0S04JH9dkfLM ¦
++------------+---------------------------------------¦
+¦ Staging    ¦ DtUoeKdr6UNZMTQ_7o--LL-uwHkR4JH9dkfLM ¦
+

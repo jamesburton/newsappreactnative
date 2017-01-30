@@ -26,6 +26,8 @@ feeds.forEach(feed => parse(feed.url).then(data => {
 //* NB: With xmldom and isomorphic-fetch
 import { DOMParser } from 'xmldom';
 
+import Toast from 'react-native-simple-toast';
+
 var parser = new DOMParser();
 async function loadFeeds(feeds, cb)
 {
@@ -59,12 +61,17 @@ async function loadFeeds(feeds, cb)
           : null;
         })
       .then(xml => {
-        if(xml === null)
-          alert('Result was not XML');
-        else if(xml.getElementsByTagName('rss').length === 1) {
+        let feedSummary = '\r\n\r\nSource=' + feed.source + '\r\nCategory=' + feed.category + '\r\nUrl=' + feed.url;
+        if(xml === null) {
+          //alert('Result was not XML' + feedSummary);
+          console.err('Result was not XML' + feedSummary);
+          Toast.show('Result was not XML' + feedSummary);
+        } else if(xml.getElementsByTagName('rss').length === 1) {
           var items = xml.getElementsByTagName('item');
           if(!items) {
-            alert('No items fetched: url=' + feed.url);
+            //alert('No items fetched' + feedSummary);
+            console.warn('No items fetched' + feedSummary);
+            Toast.show('No items fetched' + feedSummary);
           } else {
             // Clear existing list, in-case one had been loaded
             feed.items = [];
@@ -80,14 +87,20 @@ async function loadFeeds(feeds, cb)
             }
             //console.debug('Saving feed items: feed.url=', feed.url, ', feed.items=', feed.items);
             AsyncStorage.setItem(feed.url, JSON.stringify(feed.items));
+            Toast.show('Fetched ' + feed.items.length + ' item(s)' + feedSummary);
             //);
             cb(feeds);
           }
         }
-        else if(xml.getElementsByTagName('feed').length === 1)
-          alert('ATOM found');
-        else
-          alert('Unknown XML format')
+        else if(xml.getElementsByTagName('feed').length === 1) {
+          //alert('ATOM found');
+          console.debug('ATOM found, but is currently unsupported' + feedSummary);
+          Toast.show('ATOM found, but is currently unsupported' + feedSummary);
+        } else {
+          //alert('Unknown XML format')
+          console.err('Unknown XML format' + feedSummary);
+          Toast.show('Unknown XML format' + feedSummary);
+        }
       });
   });
   // TODO: Add LocalStorage caching and retrieval
